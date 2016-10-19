@@ -22,12 +22,12 @@ end
 # (Hint: split and join is ok)
 
 def increase_wage(contract)
-  contract.split(' ').map { |x| make_double.call(x) }.join(' ')
+  contract.split(' ').map(&make_double).join(' ')
 end
 
 # Run both of the created procedures
 # and collect resulting array.
 
 def process_text_array(array)
-  array.map { |x| make_double.call(x) }.map { |x| bring_up.call(x) }
+  array.map(&make_double).map(&bring_up)
 end
