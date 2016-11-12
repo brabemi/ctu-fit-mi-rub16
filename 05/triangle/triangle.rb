@@ -10,6 +10,16 @@
 #
 def triangle(a, b, c)
   # WRITE THIS CODE
+  if a+b <= c or a+c <= b or b+c <= a
+    raise TriangleError
+  end
+  if a == b and b == c
+    :equilateral
+  elsif a == b or a == c or b == c
+    :isosceles
+  else
+    :scalene
+  end
 end
 
 # Error class used in part 2.  No need to change this code.
