@@ -17,7 +17,9 @@ class Roman
     roman = ''
     FACTORS.each do |code, factor|
       count, value = value.divmod(factor)
-      roman << code unless count.zero?
+      count.times do
+        roman << code
+      end
     end
     roman
   end
