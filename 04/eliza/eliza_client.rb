@@ -19,8 +19,12 @@ end
 
 # Should be able to connect to ElizaServer
 class ElizaClient
+  extend SocketClient
 
-  # TODO: something is missing here. have a look at mixins
+  def initialize(host, port)
+    @host = host
+    @port = port
+  end
 
   def say(what)
     puts "client: connecting to #{@host}:#{@port}"
@@ -29,5 +33,6 @@ class ElizaClient
       return sock.readline.strip
     end
   end
-
 end
+
+p ElizaClient.methods.include?(:connect)
