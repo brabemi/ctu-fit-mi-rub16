@@ -1,5 +1,8 @@
 require 'rubygems'
 require 'gosu'
+require_relative './pig'
+require_relative './bird'
+require_relative './score'
 
 class Game < Gosu::Window
     def initialize
@@ -9,10 +12,17 @@ class Game < Gosu::Window
         @background = Gosu::Image.new(self, 'media/bg.png')
 
         @last_milliseconds = 0
+
+        @score = Score.new
+        @pig = Pig.new
+        @birds = (1..20).map{ Bird.new(rand(1280), rand(846), @pig, @score) }
+
+        @components = [@score, @pig, @birds].flatten
     end
 
     def draw
-        @background.draw(0, 0, 0)
+      @components.each { |c| c.draw }
+      @background.draw(0, 0, 0)
     end
 
     # this is a callback for key up events or equivalent (there are
@@ -35,6 +45,7 @@ class Game < Gosu::Window
         # clamping here is important to avoid strange behaviors
         @delta = [current_time - @last_milliseconds, 0.25].min
         @last_milliseconds = current_time
+        @components.each { |c| c.update_delta(@delta) }
     end
 end
 
