@@ -3,6 +3,7 @@ $LOAD_PATH << './'
 require 'cell'
 # Contains sudoku game board
 class Grid
+  include Enumerable
   # Create Sudoku game grid of given dimension
   def initialize(dimension)
     @dimension = dimension
@@ -69,12 +70,13 @@ class Grid
 
   # Yields elements in given row
   def row_elems(x)
-    # return @grid[x].each unless block_given?
+    return @grid[x].each unless block_given?
     @grid[x].each { |item| yield item }
   end
 
   # Yields elements in given column
   def col_elems(y)
+    return @grid.collect { |row| row[y] }.each unless block_given?
     @grid.each { |row| yield row[y] }
   end
 
@@ -91,14 +93,14 @@ class Grid
   # With one argument return row, with 2, element
   # at given position
   def [](*args)
-    return @grid[args[0]] if args.size == 1
-    @grid[args[0]][args[1]]
+    return @grid[args[0]].map(&:to_i) if args.size == 1
+    @grid[args[0]][args[1]].to_i
   end
 
   # With one argument sets row, with 2 element
   def []=(*args)
     @dimension.times { |i| @grid[args[0]][i].value = args[1][i] } if args.size == 2
-    @grid[args[0]][args[1]].value = args[2]
+    @grid[args[0]][args[1]].value = args[2] if args.size == 3
   end
 
   # Return number of missing numbers in grid
@@ -127,15 +129,39 @@ class Grid
 
   # Iterates over all elements, left to right, top to bottom
   def each
-    return @grid.collect(&:each).each unless block_given?
+    return @grid.flatten.each unless block_given?
     @grid.each { |row| row.each { |cell| yield cell } }
+  end
+
+  # Iterates over all elements, left to right, top to bottom
+  def block(id)
+    row = id / @block_width
+    col = id % @block_width
+    rs = row * @block_width
+    cs = col * @block_width
+    my_block = @grid[rs..rs+(@block_width-1)].collect { |row| row[cs..cs+(@block_width-1)] }
+    return my_block.flatten.each unless block_given?
+    my_block.flatten.each { |cell| yield cell }
+  end
+
+  # false no duplicit value (1..dimension) in elements
+  def check_duplicity(elements)
+    counter = Array.new(@dimension+1, 0)
+    elements.each { |e| counter[e.value]+=1}
+    counter[0] = 0
+    counter.detect { |e| e>1 } != nil
   end
 
   # Return true if no filled number break sudoku rules
   def valid?
+    @dimension.times { |i| return false if check_duplicity(row_elems(i)) }
+    @dimension.times { |i| return false if check_duplicity(col_elems(i)) }
+    @dimension.times { |i| return false if check_duplicity(block(i)) }
+    true
   end
 
   # Serialize grid values to a one line string
   def solution
+    each.map(&:to_i).join()
   end
 end
