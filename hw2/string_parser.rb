@@ -1,5 +1,4 @@
 #!/bin/ruby
-$LOAD_PATH << './'
 require 'grid'
 # Parse string for 9x9 sudoku game
 #

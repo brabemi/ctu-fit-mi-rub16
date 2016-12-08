@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
-$LOAD_PATH << './'
-require 'cell'
+
 # Contains sudoku game board
 class Grid
   include Enumerable
+  attr_reader :dimension, :block_width
   # Create Sudoku game grid of given dimension
   def initialize(dimension)
     @dimension = dimension
