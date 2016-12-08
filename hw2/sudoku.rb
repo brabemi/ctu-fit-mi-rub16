@@ -42,6 +42,40 @@ class Sudoku
     fail "input '#{game}' is not supported yet"
   end
 
+  def algorithm_X_rec(nodes, depth)
+    dimension = @grid.dimension
+    block_width = @grid.block_width
+    game_size = dimension*dimension
+    node = nodes.min_by {|e| e[1].size == 0 ? game_size : e[1].size }
+    if node[1].size > 0
+      vals = node[1].to_a
+      nodes[node[0]].clear()
+      r = node[0][:r]
+      c = node[0][:c]
+      rs = r - r%block_width
+      cs = c - c%block_width
+      vals.each do |i|
+        colisions = []
+        dimension.times {|r1| colisions.push({r: r1, c: c})}
+        dimension.times {|c1| colisions.push({r: r, c: c1})}
+        (rs...rs+block_width).each do |r1|
+          (cs...cs+block_width).each {|c1| colisions.push({r: r1, c: c1})}
+        end
+        changes = []
+        colisions.each {|k| changes.push(k) if (nodes[k].delete?(i) != nil)}
+        @grid[r,c] = i
+        retval = algorithm_X_rec(nodes, depth+1)
+        return true if retval
+        changes.each {|k| nodes[k].add(i)}
+      end
+      @grid[r,c] = 0
+      nodes[node[0]] = vals.to_set
+    else
+      return @grid.missing == 0
+    end
+    false
+  end
+
   def algorithm_X
     dimension = @grid.dimension
     block_width = @grid.block_width
@@ -70,31 +104,8 @@ class Sudoku
         end
       end
     end
-
-    node = nodes.min_by {|e| e[1].size == 0 ? 81 : e[1].size }
-    # steps = 81
-    # while node[1].size == 1 and steps > 0 do
-    while node[1].size == 1 do
-      i = node[1].to_a[0]
-      r = node[0][:r]
-      c = node[0][:c]
-      rs = r - r%block_width
-      cs = c - c%block_width
-      colisions = []
-      dimension.times {|r1| colisions.push({r: r1, c: c})}
-      dimension.times {|c1| colisions.push({r: r, c: c1})}
-      (rs...rs+block_width).each do |r1|
-        (cs...cs+block_width).each {|c1| colisions.push({r: r1, c: c1})}
-      end
-      colisions.each {|k| nodes[k].delete(i)}
-      @grid[r,c] = i
-      # steps -= 1
-      node = nodes.min_by {|e| e[1].size == 0 ? 81 : e[1].size }
-    end
-    # p nodes
     # print @grid.to_s
-    # print nodes
-    # p nodes.min_by {|e| e[1].size == 0 ? 81 : e[1].size }
+    algorithm_X_rec(nodes, @grid.filled)
+    # print @grid.to_s
   end
-
 end
