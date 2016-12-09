@@ -13,47 +13,59 @@ class MyArray
   end
 
   def each
-    return @array.each unless block_given?
-    @array.each { |item| yield item }
+    size.times { |i| yield @array[i] } if block_given?
+    Enumerator.new do |y|
+      size.times { |i| y << @array[i] }
+    end
   end
 
   def reverse_each
-    return @array.reverse_each unless block_given?
-    @array.reverse_each { |item| yield item }
+    size.times { |i| yield @array[size - i - 1] } if block_given?
+    Enumerator.new do |y|
+      size.times { |i| y << @array[size - i - 1] }
+    end
   end
 
   def reverse
-    @array.reverse
+    reverse_each.to_a
   end
 
   def reverse!
-    @array.reverse!
+    @array = reverse
   end
 
   def pop
-    @array.pop
+    retval = @array[size - 1]
+    @array = @array[0...size - 1]
+    retval
   end
 
   def select
-    return @array.select unless block_given?
-    @array.select { |item| yield item }
+    retval = []
+    each { |e| retval.push(e) if yield e }
+    retval
   end
 
   def map
-    return @array.map unless block_given?
-    @array.map { |item| yield item }
+    return each unless block_given?
+    retval = []
+    each { |e| retval.push(yield e) }
+    retval
   end
 
   def clear
-    @array.clear
+    @array = []
   end
 
   def include?(item)
-    @array.include?(item)
+    each { |e| return true if e == item }
+    false
   end
 
   def max
-    return @array.max unless block_given?
-    @array.max { |a, b| yield a, b }
+    max = @array[0]
+    each { |e| max = e if (e <=> max) == 1 } unless block_given?
+    each { |e| max = e if (yield e, max) == 1 } if block_given?
+    max
   end
 end
