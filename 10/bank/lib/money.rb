@@ -55,3 +55,51 @@ class Money
 end
 
 # TODO: Define money conversion methods using metaprogramming
+class Money
+  def to_czk
+    convert_to_currency(:CZK)
+  end
+
+  def to_eur
+    convert_to_currency(:EUR)
+  end
+
+  def to_usd
+    convert_to_currency(:USD)
+  end
+
+  def to_gbp
+    convert_to_currency(:GPB)
+  end
+
+  def to_chf
+    convert_to_currency(:CHF)
+  end
+
+  def to_pln
+    convert_to_currency(:PLN)
+  end
+
+  def to_nok
+    convert_to_currency(:NOK)
+  end
+
+  def to_aud
+    convert_to_currency(:AUD)
+  end
+
+  def to_dkk
+    convert_to_currency(:DKK)
+  end
+
+  private
+
+  def convert_to_currency(currency)
+    currency = currency.to_sym
+    if @currency != currency
+      @value = ExchangeRates.change(@value, @currency, currency)
+      @currency = currency
+    end
+    self
+  end
+end
