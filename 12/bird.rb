@@ -1,7 +1,6 @@
 class Bird
   def initialize(x, y, pig, score)
     @x, @y = x, y
-    @x_i, @y_i = x, y
     @img = Gosu::Image.new('media/bird.png')
     @pig = pig
     @hidden = false
@@ -9,7 +8,7 @@ class Bird
   end
 
   def draw
-    @img.draw(@x_i, @y_i, 1) unless @hidden
+    @img.draw(@x, @y, 1) unless @hidden
   end
 
   def update_delta(delta)
@@ -25,8 +24,6 @@ class Bird
         else
           @x += x_run
           @y += y_run
-          @x_i = @x.to_i
-          @y_i = @y.to_i
         end
       end
     end
