@@ -15,7 +15,7 @@ class Game < Gosu::Window
 
         @score = Score.new
         @pig = Pig.new
-        @birds = (1..20).map{ Bird.new(rand(1280), rand(846), @pig, @score) }
+        @birds = (1..20).map{ Bird.new(rand(1280-70), rand(846-82), @pig, @score) }
 
         @components = [@score, @pig, @birds].flatten
     end
