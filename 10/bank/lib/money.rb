@@ -56,43 +56,21 @@ end
 
 # TODO: Define money conversion methods using metaprogramming
 class Money
-  def to_czk
-    convert_to_currency(:CZK)
+  def method_missing(name, *args, &block)
+    currency = method_name_to_cur(name)
+    return convert_to_currency(currency) if ExchangeRates.supported? currency
+    super
   end
 
-  def to_eur
-    convert_to_currency(:EUR)
-  end
-
-  def to_usd
-    convert_to_currency(:USD)
-  end
-
-  def to_gbp
-    convert_to_currency(:GPB)
-  end
-
-  def to_chf
-    convert_to_currency(:CHF)
-  end
-
-  def to_pln
-    convert_to_currency(:PLN)
-  end
-
-  def to_nok
-    convert_to_currency(:NOK)
-  end
-
-  def to_aud
-    convert_to_currency(:AUD)
-  end
-
-  def to_dkk
-    convert_to_currency(:DKK)
+  def respond_to_missing?(name, include_private = false)
+    ExchangeRates.supported?(method_name_to_cur(name)) or super
   end
 
   private
+
+  def method_name_to_cur(name)
+    name[3..5].upcase.to_sym if name =~ /to_[a-z]{3}/
+  end
 
   def convert_to_currency(currency)
     currency = currency.to_sym
