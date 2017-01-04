@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'pg'
 gem 'rake'
 gem 'em-postgresql-adapter',
-    git: 'git://github.com/leftbee/em-postgresql-adapter.git'
+    git: 'git://github.com/pangea/em-postgresql-adapter.git'
 gem 'rack-fiber_pool',  require: 'rack/fiber_pool'
 gem 'em-http-request'
 gem 'em-synchrony'
